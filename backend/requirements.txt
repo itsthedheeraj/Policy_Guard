@@ -13,3 +13,5 @@ sentence-transformers
 nltk
 numpy
 pandas
+motor
+pymongo

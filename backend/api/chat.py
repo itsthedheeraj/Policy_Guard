@@ -9,6 +9,7 @@ from backend.api.auth import get_current_user
 from backend.models.user import User
 from backend.models.chat import ChatSession, ChatMessage
 from backend.models.project import Project
+from backend.db.mongo import save_chat_message_sync
 
 router = APIRouter(tags=["LLM"])
 
@@ -90,6 +91,13 @@ def chat_with_assistant(
         )
         db.add(assistant_msg)
         db.commit()
+
+        # Polyglot persistence: store in MongoDB chat collection
+        try:
+            save_chat_message_sync(str(session.id), str(session.project_id), "user", request.message)
+            save_chat_message_sync(str(session.id), str(session.project_id), "assistant", result["response"])
+        except Exception:
+            pass
         
         return {
             "response": result["response"],

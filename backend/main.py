@@ -6,6 +6,7 @@ from backend.db import base
 from backend.api import auth, projects, documents, analysis, search, rewrite, chat, admin
 from backend.core.config import settings
 from backend.services import rag_service
+from backend.db.mongo import init_mongo, close_mongo
 
 # Setup logging
 logging.basicConfig(
@@ -65,6 +66,9 @@ async def lifespan(app: FastAPI):
         except Exception as seed_err:
             logger.error(f"Failed to seed default users: {seed_err}")
 
+    # Initialize MongoDB (Polyglot persistence)
+    await init_mongo()
+
     if "PYTEST_CURRENT_TEST" in os.environ or os.getenv("TESTING") == "True":
         logger.info("Skipping RAG indexing during test runs.")
     else:
@@ -72,6 +76,8 @@ async def lifespan(app: FastAPI):
         rag_service.init_rag_system()
         logger.info("RAG system initialization completed.")
     yield
+    # Cleanup MongoDB connection on shutdown
+    await close_mongo()
 
 
 app = FastAPI(

@@ -12,7 +12,10 @@ else:
 
 class Settings:
     PROJECT_NAME: str = "PolicyGuard AI"
+    # Database settings
     DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./policyguard.db")
+    MONGO_URI: str = os.getenv("MONGO_URI", "mongodb://localhost:27017")
+    MONGO_DB_NAME: str = os.getenv("MONGO_DB_NAME", "policyguard")
     JWT_SECRET: str = os.getenv("JWT_SECRET", "8f95c5d0a6c0e86b24d77051416e78cf8e81561f71f654b4be288001fae2985c")
     ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "60"))
     

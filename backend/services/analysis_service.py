@@ -9,7 +9,6 @@ from backend.models.finding import Finding
 from backend.models.score import Score
 from backend.compliance import rule_engine, scoring
 from backend.services import ml_service, industry_service
-from backend.db.mongo import save_document_content_sync, save_analysis_report_sync
 import nltk
 from nltk.tokenize import sent_tokenize
 
@@ -136,28 +135,6 @@ def run_analysis(db: Session, document_id: uuid.UUID, framework: str) -> Analysi
         analysis.status = "completed"
         db.commit()
         db.refresh(analysis)
-
-        # Polyglot Persistence: Persist raw document text and complete JSON findings in MongoDB
-        try:
-            save_document_content_sync(
-                document_id=str(document.id),
-                project_id=str(document.project_id),
-                raw_text=text,
-                metadata={
-                    "filename": document.filename,
-                    "original_filename": document.original_filename,
-                    "detected_industry": detected
-                }
-            )
-            save_analysis_report_sync(
-                analysis_id=str(analysis.id),
-                document_id=str(document.id),
-                framework=framework,
-                findings=all_findings,
-                scores=scores_data
-            )
-        except Exception as mongo_err:
-            logger.warning(f"MongoDB persistence non-fatal warning: {mongo_err}")
 
     except Exception as e:
         logger.error(f"Analysis failed for document {document_id}: {e}")

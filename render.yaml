@@ -11,6 +11,10 @@ services:
         fromDatabase:
           name: policyguard-db
           property: connectionString
+      - key: MONGO_URI
+        sync: false # Render prompts the user for MongoDB Atlas URI on deployment
+      - key: MONGO_DB_NAME
+        value: policyguard
       - key: JWT_SECRET
         generateValue: true
       - key: GROQ_API_KEY

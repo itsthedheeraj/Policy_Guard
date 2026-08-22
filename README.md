@@ -10,196 +10,186 @@ PolicyGuard AI is an automated privacy policy auditor and regulatory chatbot pla
 * **AI Suggested Rewrite Tool**: Suggests direct compliance rewrites for violated clauses using LLM intelligence with customizable provider selections (*Groq Llama 3.3, OpenAI GPT-4o, or local template fallbacks*).
 * **Grounded RAG Chatbot**: Chat directly with legal regulations powered by a high-performance semantic search database indexed against official article contents.
 * **Auditing Dashboard & Executive Reports**: Interactive charts tracking framework scores, recent critical violations, and print-ready PDF executive summaries.
+* **Polyglot Persistence Database**: Relational schema safety via PostgreSQL alongside flexible document storage via MongoDB.
 
 ---
 
 ## 🛠️ Technology Stack & Tooling
+
 * **Frontend**:
   * **Framework**: React 19 + TypeScript + Vite.
   * **Styling**: Tailwind CSS v4 (native variables, utility optimizations).
   * **Icons & Charts**: `lucide-react` & `recharts`.
+  * **State & Routing**: `react-router-dom`.
+
 * **Backend**:
-  * **Framework**: Python 3.12 + FastAPI (Lifespan resource management).
-  * **Database**: SQLite (SQLAlchemy ORM) with Postgres compatibility.
+  * **Framework**: Python 3.12 + FastAPI (Async ASGI with Lifespan management).
+  * **Relational DB**: PostgreSQL (SQLAlchemy ORM) with automatic local SQLite fallback (`policyguard.db`).
+  * **Document DB**: MongoDB (Motor async driver & PyMongo) for raw texts, analysis reports, and chat transcripts.
   * **Testing**: Pytest (Automated unit validation suites).
+
 * **Machine Learning & RAG**:
   * **Embedding Model**: Sentence-Transformers `all-MiniLM-L6-v2` (SBERT).
   * **Classification**: Bi-Directional LSTM neural network for sentence classification.
-  * **Vector Database**: SQL-backed cosine similarity vector table storing serialized float32 NumPy vectors.
+  * **Vector Database**: SQLite + NumPy vector store with cosine similarity calculation (or Qdrant container).
   * **NLP Tokenization**: NLTK sentence tokenize framework.
-  * **LLM Clients**: OpenAI SDK supporting both OpenAI and Groq APIs.
+  * **LLM Clients**: Groq API (Llama 3.3) and OpenAI SDK.
 
 ---
 
 ## 📐 Architecture & System Design
+
 ```mermaid
 graph TD
-    A[Policy Document] --> B[FastAPI Backend]
-    B --> C[Sentence Tokenizer]
-    C --> D[SBERT Embedding Engine]
-    D --> E[Bi-LSTM Classifier]
-    D --> F[Rule Engine Checkers]
-    F -->|rules.json| G[Framework Plugin Folder]
-    E -->|GDPR SBERT model| H[ML Predictions]
-    B --> I[Industry Detection Service]
-    H --> J[Merged Findings & Scores]
-    G --> J
-    J --> K[SQL Database Storage]
-    B --> L[RAG Semantic Search]
-    L -->|articles.json| M[Local Vector Database]
-    M --> N[Conversational LLM Context]
+    subgraph ClientLayer [Frontend & Clients]
+        UI[React 19 + Vite Frontend]
+    end
+
+    subgraph FastAPILayer [FastAPI Backend Engine]
+        AUTH[Auth Router]
+        PROJ[Projects Router]
+        DOCS[Documents Router]
+        ANALYZE[Analysis Router]
+        CHAT[Chat Router]
+        ADMIN[Admin Router]
+    end
+
+    subgraph RelationalDB [PostgreSQL / SQLite Fallback]
+        U[(Users, Auth, Roles)]
+        P[(Projects & Workspaces)]
+        DM[(Document Metadata & Paths)]
+        AM[(Analysis Runs & Status)]
+        AL[(Audit Logs)]
+    end
+
+    subgraph DocumentDB [MongoDB]
+        DT[(Document Raw Text & Chunks)]
+        AF[(Detailed Findings & Scores JSON)]
+        CS[(Chat Sessions & Transcripts)]
+    end
+
+    subgraph VectorEngine [Vector Store]
+        VS[(Regulatory Articles Embeddings)]
+    end
+
+    UI --> FastAPILayer
+    AUTH --> RelationalDB
+    PROJ --> RelationalDB
+    DOCS --> RelationalDB
+    DOCS --> DocumentDB
+    ANALYZE --> RelationalDB
+    ANALYZE --> DocumentDB
+    CHAT --> DocumentDB
+    CHAT --> VectorEngine
+    ADMIN --> RelationalDB
 ```
-
-### 1. The Plugin Architecture
-The core engine has **zero framework-specific code**. All compliance parameters are structured as plugins inside [`backend/compliance/frameworks/`](file:///c:/Users/ayush/Document/V_Sem/SI_2/GDPR_compliance_checker/backend/compliance/frameworks/):
-* `rules.json`: Declares forbidden or required text patterns.
-* `articles.json`: Declares official regulatory articles for RAG lookup.
-* `severity.json`: Map categories to severity weightings.
-
-### 2. Dual-Engine Audit Flow
-When auditing a document, the platform runs two parallel pipelines:
-* **The Classifier Model**: Translates text into SBERT sentence embeddings and evaluates them against the 7 GDPR principles using the Bi-LSTM model.
-* **The Rule Engine**: Processes the text against dynamic regex/keyword rule patterns configured in each framework's plugin folder.
 
 ---
 
-## 🚀 Scalability Blueprint
+## 🗄️ Polyglot Persistence Split
 
-As PolicyGuard AI transitions to production, the system is designed to scale horizontally across three dimensions:
-
-### 1. Vector Database Upgrades
-* **Current**: Local NumPy-based dot product matrix calculation in SQLite.
-* **Scale Option**: Swap the custom `vector_store.py` module with a dedicated cloud-native vector database like **Qdrant** or **pgvector**. This allows millions of chunks to be queried in milliseconds using HNSW indices.
-
-### 2. Distributed ML & Model Serving
-* **Current**: PyTorch models are loaded directly into the FastAPI process memory.
-* **Scale Option**: Offload SBERT embeddings and Bi-LSTM classification tasks to a standalone model server like **Triton Model Analyzer** or **Hugging Face TGI**. The main web server remains lightweight, communicating with the inference engines via gRPC.
-
-### 3. Queue-Based Asynchronous Workflows
-* **Current**: FastAPI handles the audit flow synchronously on a per-request basis.
-* **Scale Option**: Use **Celery** or **Arq** backed by **Redis** to run analysis tasks in the background. Users receive instant job IDs, and WebSockets update the frontend UI once the compliance processing is complete.
-
----
-
-## ➕ Adding a New Compliance Framework
-
-To integrate a new regulatory standard (e.g., *EU AI Act* or *ISO 27001*):
-
-### Step 1: Create the Plugin Folder
-Add a new directory inside [`backend/compliance/frameworks/`](file:///c:/Users/ayush/Document/V_Sem/SI_2/GDPR_compliance_checker/backend/compliance/frameworks/) using lowercase letters (e.g., `iso_27001`).
-
-### Step 2: Define the Rules (`rules.json`)
-List compliance checks, severities, articles, and text patterns:
-```json
-[
-  {
-    "id": "ISO_ACCESS_CONTROL",
-    "title": "Access Restrictions Check",
-    "severity": "high",
-    "category": "Access Security",
-    "regulation": "ISO 27001",
-    "article": "Control A.8",
-    "description": "Requires a statement restricting access to information assets.",
-    "fix": "Add access control parameters restricting system credentials.",
-    "check": {
-      "type": "required_pattern",
-      "patterns": ["access control", "restrict access", "unauthorized personnel"]
-    }
-  }
-]
-```
-
-### Step 3: Define RAG Articles (`articles.json`)
-Add reference legal definitions used by the chatbot assistant:
-```json
-[
-  {
-    "id": "ISO_A_8",
-    "title": "Access Control",
-    "regulation": "ISO 27001",
-    "article": "Control A.8",
-    "content": "Access to information and other associated assets shall be restricted...",
-    "source": "ISO/IEC 27001:2022"
-  }
-]
-```
-The backend automatically detects the folder, exposes it in the UI checkboxes, and auto-indexes the RAG vectors upon server startup.
+| Data Domain | Database Engine | Collection / Table | Why? |
+| :--- | :--- | :--- | :--- |
+| **Users, Auth, Roles** | **PostgreSQL** | `user` | Strict schema, ACID transactional integrity, password hashing. |
+| **Projects & Ownership** | **PostgreSQL** | `project` | Relational constraints and cascading rules. |
+| **Document Metadata** | **PostgreSQL** | `document` | Storage paths, hashes, upload tracking. |
+| **Analysis Metadata** | **PostgreSQL** | `analysis`, `score` | Summary metrics, statuses, and relational linking. |
+| **Extracted Raw Policy Text** | **MongoDB** | `document_contents` | Large text payloads, parsed page chunks. |
+| **Complete Audit Findings** | **MongoDB** | `analysis_reports` | Dynamic, deeply nested finding structures per regulation. |
+| **Chat Message History** | **MongoDB** | `chat_sessions` | Conversational message arrays with rapid retrieval. |
+| **RAG Embeddings** | **SQLite / Qdrant** | `vector_chunks` | Cosine similarity nearest-neighbor lookup for legal articles. |
 
 ---
 
 ## ⚡ Setup & Development
 
-### 1. Configuration
-Create a [`backend/.env`](file:///c:/Users/ayush/Document/V_Sem/SI_2/GDPR_compliance_checker/backend/.env) file:
+### 1. Environment Configuration
+Create a `backend/.env` file:
 ```env
-DATABASE_URL=sqlite:///./policyguard.db
+# Database Settings
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/policyguard
+MONGO_URI=mongodb://localhost:27017
+MONGO_DB_NAME=policyguard
+
+# JWT Security
 JWT_SECRET=your_jwt_secret_key
-GROQ_API_KEY=gsk_your_groq_key_here
+ACCESS_TOKEN_EXPIRE_MINUTES=60
+
+# Upload Settings
+UPLOAD_DIR=uploads
+MAX_UPLOAD_SIZE_MB=10
+
+# LLM Settings — Groq / OpenAI
+GROQ_API_KEY=gsk_your_groq_api_key_here
 GROQ_MODEL=llama-3.3-70b-versatile
 ```
 
-### 2. Start Backend
+### 2. Option A: Run via Docker Compose (Recommended)
+Spins up PostgreSQL, MongoDB, Qdrant, FastAPI Backend, and React Frontend in isolated containers:
+```powershell
+docker compose up -d
+```
+* **Frontend**: [http://localhost:8080](http://localhost:8080)
+* **Backend API**: [http://localhost:8000](http://localhost:8000)
+* **API Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
+
+---
+
+### 3. Option B: Run Locally
+
+#### Start Backend:
 ```powershell
 # Activate virtual environment
 .\.venv\Scripts\activate
-# Start Server
-python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000
+
+# Install dependencies
+pip install -r backend/requirements.txt
+
+# Start FastAPI server
+python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000 --reload
 ```
 
-### 3. Start Frontend
+#### Start Frontend:
 ```powershell
 cd frontend
 npm install
 npm run dev
 ```
 
-### 4. Run Test Suite
-To verify code changes and check endpoints:
+---
+
+### 4. Run Automated Test Suite
+To verify code changes and check endpoints across all frameworks:
 ```powershell
-.\.venv\Scripts\pytest
+.\.venv\Scripts\pytest backend/tests/ -v
 ```
+
+---
+
+## ☁️ Deployment (Render Blueprint)
+
+PolicyGuard is configured for one-click deployment using **`render.yaml`**:
+1. **PostgreSQL**: Managed database (`policyguard-db`) provisioned automatically on Render.
+2. **MongoDB**: Connect to a free [MongoDB Atlas Cluster](https://www.mongodb.com/cloud/atlas) by supplying your `MONGO_URI` in the Render dashboard.
+3. **Backend & Frontend**: Dockerized web services built and served with HTTPS.
 
 ---
 
 ## 🛠️ Admin & Operations CLI
 
-We have created a command-line administration tool [`backend/admin_cli.py`](file:///c:/Users/ayush/Document/V_Sem/SI_2/GDPR_compliance_checker/backend/admin_cli.py) to manage the system and view live stats:
+A command-line administration tool [`backend/admin_cli.py`](file:///c:/Users/ayush/Document/V_Sem/SI_2/PolicyGuard/backend/admin_cli.py) is available for system management:
 
-### 1. Show System Summary
-Get a summary of registered users, active projects, uploaded policies, and DB sizes:
 ```powershell
+# Show system summary & database metrics
 python backend/admin_cli.py summary
-```
 
-### 2. List All Users
-Print a formatted table of all registered system auditors:
-```powershell
+# List all registered users
 python backend/admin_cli.py list-users
-```
 
-### 3. Delete a User
-Cascade-delete a user and all of their projects, policies, and analyses:
-```powershell
-python backend/admin_cli.py delete-user <username>
-```
-
-### 4. Reindex RAG Vectors
-Manually rebuild vector embeddings for all framework reference articles:
-```powershell
+# Rebuild vector embeddings for regulatory frameworks
 python backend/admin_cli.py reindex
 ```
 
-### 5. System Stats API
-Admins can also query metrics directly via a JSON endpoint:
-* **Endpoint**: `GET /api/admin/stats` (returns a dictionary of table counts and SQLite file storage details).
-
----
-
-## 💻 Admin Console UI
-
-You can also access the **Admin Console** directly inside the web browser:
-1. Log in to the application at [http://localhost:5173](http://localhost:5173).
-2. Click **Admin Console** in the sidebar navigation.
-3. View real-time database table counts, storage file sizes (main DB vs. vector DB), database driver types, and PyTorch ML/RAG status configurations.
-
-
+### Default Seeded Credentials:
+* **Admin**: `admin` / `admin`
+* **User**: `test1` / `test1`

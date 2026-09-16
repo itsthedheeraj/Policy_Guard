@@ -14,7 +14,7 @@ backend
 
 postgres
 
-qdrant
+mongo
 
 ## CI/CD
 
@@ -31,9 +31,9 @@ Requirements:
 
 DATABASE_URL
 
-OPENAI_API_KEY
+MONGO_URI
 
-QDRANT_URL
+OPENAI_API_KEY / GROQ_API_KEY
 
 JWT_SECRET
 

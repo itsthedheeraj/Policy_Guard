@@ -54,10 +54,4 @@ Each chunk contains:
 
 ## Vector DB
 
-Preferred:
-
-- Qdrant
-
-Alternative:
-
-- ChromaDB
+- SQLite + NumPy vector store (`vector_chunks` table in `vector_store.db`)

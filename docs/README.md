@@ -17,10 +17,10 @@ PolicyGuard AI is a next-generation compliance analysis platform that helps orga
 
 Unlike traditional rule-based compliance checkers, PolicyGuard AI combines:
 
-* 🤖 Machine Learning
-* 📜 Rule-Based Validation
-* 🔎 Retrieval-Augmented Generation (RAG)
-* 🧠 Large Language Models (LLMs)
+- 🤖 Machine Learning
+- 📜 Rule-Based Validation
+- 🔎 Retrieval-Augmented Generation (RAG)
+- 🧠 Large Language Models (LLMs)
 
 to provide explainable, evidence-backed compliance reports and actionable recommendations.
 
@@ -32,12 +32,12 @@ to provide explainable, evidence-backed compliance reports and actionable recomm
 
 Supports:
 
-* PDF
-* DOCX
-* TXT
-* HTML
-* Markdown
-* Website URLs
+- PDF
+- DOCX
+- TXT
+- HTML
+- Markdown
+- Website URLs
 
 ---
 
@@ -45,19 +45,19 @@ Supports:
 
 Current:
 
-* GDPR
-* HIPAA
-* PCI DSS
-* CCPA
-* UK GDPR
+- GDPR
+- HIPAA
+- PCI DSS
+- CCPA
+- UK GDPR
 
 Planned:
 
-* ISO 27001
-* SOC 2
-* NIST Cybersecurity Framework
-* EU AI Act
-* LGPD
+- ISO 27001
+- SOC 2
+- NIST Cybersecurity Framework
+- EU AI Act
+- LGPD
 
 ---
 
@@ -97,13 +97,13 @@ The existing ML classifier is retained and used to prioritize likely compliance 
 
 Deterministic validation detects:
 
-* Missing consent clauses
-* Missing retention policies
-* Missing cookie notices
-* Missing security statements
-* Missing user rights
-* Missing breach notification
-* Missing encryption requirements
+- Missing consent clauses
+- Missing retention policies
+- Missing cookie notices
+- Missing security statements
+- Missing user rights
+- Missing breach notification
+- Missing encryption requirements
 
 ---
 
@@ -115,11 +115,11 @@ Relevant legal documents are retrieved before generating explanations.
 
 Knowledge Base:
 
-* GDPR
-* HIPAA
-* PCI DSS
-* CCPA
-* UK GDPR
+- GDPR
+- HIPAA
+- PCI DSS
+- CCPA
+- UK GDPR
 
 ---
 
@@ -127,11 +127,11 @@ Knowledge Base:
 
 Ask questions like:
 
-* Why is my policy non-compliant?
-* Explain this finding.
-* Rewrite this section.
-* Which regulation applies?
-* How can I improve compliance?
+- Why is my policy non-compliant?
+- Explain this finding.
+- Rewrite this section.
+- Which regulation applies?
+- How can I improve compliance?
 
 ---
 
@@ -141,20 +141,20 @@ Automatically rewrite non-compliant sections while preserving document structure
 
 Features:
 
-* Side-by-side comparison
-* Highlighted changes
-* Accept/reject workflow
+- Side-by-side comparison
+- Highlighted changes
+- Accept/reject workflow
 
 ---
 
 ### 📊 Compliance Dashboard
 
-* Overall compliance score
-* Framework-specific scores
-* Risk heatmap
-* Severity distribution
-* Interactive charts
-* Downloadable reports
+- Overall compliance score
+- Framework-specific scores
+- Risk heatmap
+- Severity distribution
+- Interactive charts
+- Downloadable reports
 
 ---
 
@@ -162,18 +162,18 @@ Features:
 
 Generate reports in:
 
-* PDF
-* HTML
-* JSON
+- PDF
+- HTML
+- JSON
 
 Each report includes:
 
-* Executive Summary
-* Compliance Scores
-* Findings
-* Risk Matrix
-* Recommendations
-* Legal References
+- Executive Summary
+- Compliance Scores
+- Findings
+- Risk Matrix
+- Recommendations
+- Legal References
 
 ---
 
@@ -211,33 +211,33 @@ Each report includes:
 
 ## Backend
 
-* FastAPI
-* SQLAlchemy
-* PostgreSQL
-* Alembic
-* Pydantic
+- FastAPI
+- SQLAlchemy
+- PostgreSQL
+- Alembic
+- Pydantic
 
 ## Frontend
 
-* React
-* TypeScript
-* Tailwind CSS
-* shadcn/ui
-* React Query
+- React
+- TypeScript
+- Tailwind CSS
+- shadcn/ui
+- React Query
 
 ## AI & ML
 
-* Existing ML Classifier
-* OpenAI GPT
-* RAG
-* Embeddings
-* Vector Database (Qdrant or ChromaDB)
+- Existing ML Classifier
+- OpenAI GPT
+- RAG
+- Embeddings
+- Vector Database (Embedded SQLite + NumPy vector store)
 
 ## Deployment
 
-* Docker
-* Docker Compose
-* GitHub Actions
+- Docker
+- Docker Compose
+- GitHub Actions
 
 ---
 
@@ -261,21 +261,21 @@ PolicyGuardAI/
 
 Detailed documentation is available in the `docs/` directory.
 
-* `00_Project_Overview.md`
-* `01_Architecture.md`
-* `02_Backend.md`
-* `03_Frontend.md`
-* `04_RAG.md`
-* `05_ML.md`
-* `06_Compliance_Frameworks.md`
-* `07_APIs.md`
-* `08_Reporting.md`
-* `09_Deployment.md`
-* `10_Roadmap.md`
-* `11_Product_Differentiators.md`
-* `12_Database_Schema.md`
-* `13_System_Design.md`
-* `14_Development_Guidelines.md`
+- `00_Project_Overview.md`
+- `01_Architecture.md`
+- `02_Backend.md`
+- `03_Frontend.md`
+- `04_RAG.md`
+- `05_ML.md`
+- `06_Compliance_Frameworks.md`
+- `07_APIs.md`
+- `08_Reporting.md`
+- `09_Deployment.md`
+- `10_Roadmap.md`
+- `11_Product_Differentiators.md`
+- `12_Database_Schema.md`
+- `13_System_Design.md`
+- `14_Development_Guidelines.md`
 
 ---
 
@@ -283,48 +283,48 @@ Detailed documentation is available in the `docs/` directory.
 
 ### Phase 1
 
-* Backend foundation
-* Authentication
-* Database
-* File upload
+- Backend foundation
+- Authentication
+- Database
+- File upload
 
 ### Phase 2
 
-* Rule engine
-* ML integration
-* Compliance plugins
+- Rule engine
+- ML integration
+- Compliance plugins
 
 ### Phase 3
 
-* RAG
-* Embeddings
-* Vector database
-* LLM integration
+- RAG
+- Embeddings
+- Vector database
+- LLM integration
 
 ### Phase 4
 
-* Dashboard
-* Reports
-* AI chatbot
-* Policy rewriting
+- Dashboard
+- Reports
+- AI chatbot
+- Policy rewriting
 
 ### Phase 5
 
-* Docker
-* CI/CD
-* Testing
-* Performance optimization
+- Docker
+- CI/CD
+- Testing
+- Performance optimization
 
 ---
 
 # 🎯 Project Goals
 
-* Modular architecture
-* Explainable AI
-* Multi-regulation support
-* Production-ready codebase
-* Extensible plugin system
-* Enterprise-style reporting
+- Modular architecture
+- Explainable AI
+- Multi-regulation support
+- Production-ready codebase
+- Extensible plugin system
+- Enterprise-style reporting
 
 ---
 
@@ -351,10 +351,10 @@ This project is licensed under the MIT License.
 
 PolicyGuard AI is designed as a modern compliance analysis platform demonstrating:
 
-* Backend Engineering
-* Machine Learning
-* Retrieval-Augmented Generation (RAG)
-* Large Language Model Integration
-* Document Intelligence
-* Modern System Design
-* Production-Ready Software Architecture
+- Backend Engineering
+- Machine Learning
+- Retrieval-Augmented Generation (RAG)
+- Large Language Model Integration
+- Document Intelligence
+- Modern System Design
+- Production-Ready Software Architecture

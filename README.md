@@ -202,6 +202,5 @@ python backend/admin_cli.py reindex
 ```
 
 ### Default Seeded Credentials:
-
-- **Admin**: `admin` / `admin`
-- **User**: `test1` / `test1`
+* **Admin**: `admin` / `admin`
+* **User**: `test1` / `test1`
